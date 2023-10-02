@@ -26,9 +26,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         &CONFIG.btc.useragent,
     )
     .await?;
-    if success {
-        println!("handshake successfull");
-    } else {
+    if !success {
         println!("handshake failed");
     }
     Ok(())

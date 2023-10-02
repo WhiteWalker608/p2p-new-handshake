@@ -33,7 +33,7 @@ impl Btc {
 }
 #[async_trait]
 impl Handshaker for Btc {
-    async fn startHandshake(
+    async fn start_handshake(
         &self,
         tx_stream: &mut OwnedWriteHalf,
         address: &String,
@@ -59,16 +59,12 @@ impl Handshaker for Btc {
         tx_stream.write_all(data.as_slice()).await?;
         Ok(())
     }
-    async fn processHandshakeMsg(
+    async fn process_handshake_msg(
         &mut self,
         message: RawNetworkMessage,
         tx_stream: &mut OwnedWriteHalf,
     ) -> Result<(), Box<dyn Error>> {
-        println!(
-            "processing message: {} {:?}",
-            message.cmd().to_string(),
-            message.payload
-        );
+        println!("processing message: {}", message.cmd().to_string(),);
         match message.payload {
             message::NetworkMessage::Verack => Ok(()),
             message::NetworkMessage::Version(v) => {
@@ -77,22 +73,22 @@ impl Handshaker for Btc {
                     payload: NetworkMessage::Verack,
                 });
                 tx_stream.write_all(data.as_slice()).await?;
-                Ok(())
-            }
-            message::NetworkMessage::Ping(p) => {
+                println!(
+                    "handshake successful version {} user-agent {}",
+                    v.version, v.user_agent
+                );
                 self.handshake_complete = true;
                 Ok(())
             }
             _ => Ok(()),
         }
     }
-    async fn readTcpStream(
+    async fn read_tcp_stream(
         &mut self,
         stream: &mut OwnedReadHalf,
     ) -> Result<Option<RawNetworkMessage>, Box<dyn Error>> {
         loop {
             if let Ok((message, count)) = deserialize_partial::<RawNetworkMessage>(&self.buffer) {
-                println!("read from buffer");
                 self.buffer.advance(count);
                 return Ok(Some(message));
             }
