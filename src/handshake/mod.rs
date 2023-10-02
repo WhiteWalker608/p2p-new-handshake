@@ -7,7 +7,8 @@ use tokio::net::{
 };
 
 pub mod btc;
-// use crate::types::handshake::HanshakeCompleteEvent;
+
+// handshaker trait
 #[async_trait]
 pub trait Handshaker {
     async fn start_handshake(
@@ -48,16 +49,21 @@ async fn handshake_util<T: Handshaker>(
     address: &String,
     user_agent: &String,
 ) -> Result<bool, Box<dyn Error>> {
+    // create a tcp connection
     let tcp_stream = tokio::time::timeout(
         Duration::from_millis(tcp_timeout),
         TcpStream::connect(address.clone()),
     )
     .await??;
     println!("tcp connection established with peer");
+
+    // send the first handshake message
     let (mut rx_stream, mut tx_stream) = tcp_stream.into_split();
     handshaker
         .start_handshake(&mut tx_stream, address, user_agent)
         .await?;
+
+    // perform handshake
     loop {
         let raw_msg = handshaker.read_tcp_stream(&mut rx_stream).await?;
         if let Some(msg) = raw_msg {

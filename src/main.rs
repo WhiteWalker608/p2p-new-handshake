@@ -16,8 +16,13 @@ lazy_static! {
 async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
 
+    // getting address from command line
     let address = &args[1];
+
+    // create btc handshaker
     let mut btc = handshake::btc::Btc::new(CONFIG.btc.buffersize as usize);
+
+    // perform handshake
     let success = handshake::handshake(
         &mut btc,
         CONFIG.btc.tcptimeout,
