@@ -70,3 +70,29 @@ async fn handshake_util<T: Handshaker>(
         }
     }
 }
+
+#[cfg(test)]
+
+mod tests {
+    use super::*;
+    use crate::CONFIG;
+    use btc::Btc;
+
+    #[tokio::test]
+    async fn test_handshake_timeout() {
+        let mut handshaker = Btc::new(1024);
+        tokio::time::timeout(
+            Duration::from_millis(200),
+            handshake(
+                &mut handshaker,
+                100,
+                100,
+                &"0.0.0.0:80".to_string(),
+                &CONFIG.btc.useragent,
+            ),
+        )
+        .await
+        .unwrap()
+        .expect_err("should timeout");
+    }
+}
