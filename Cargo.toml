@@ -6,5 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+async-trait = "0.1.73"
 bitcoin = "0.30.1"
+bytes = "1.5.0"
+config = "0.13.3"
+derive_more = "0.99.17"
+lazy_static = "1.4.0"
+serde = { version = "1.0.188", features = ["derive"] }
 tokio = { version = "1.32.0", features = ["full"] }

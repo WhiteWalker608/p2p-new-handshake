@@ -1,0 +1,5 @@
+[btc]
+tcptimeout = 1000
+handshaketimeout = 5000
+useragent = "/Satoshi:23.0.0/"
+buffersize = 1024
